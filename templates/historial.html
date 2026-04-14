@@ -31,11 +31,21 @@
         li {
             padding: 10px 0;
             border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         a {
             text-decoration: none;
             color: #4CAF50;
             font-size: 18px;
+        }
+        .delete-btn {
+            background: none;
+            border: none;
+            color: red;
+            font-size: 16px;
+            cursor: pointer;
         }
         .back {
             margin-top: 20px;
@@ -57,6 +67,13 @@
                 <a href="/reporte/{{ r[0] }}">
                     {{ r[1] }} — ${{ "%.2f"|format(r[2]) }}
                 </a>
+
+                <!-- BOTÓN BORRAR -->
+                <form action="/borrar/{{ r[0] }}" method="POST" style="margin:0;">
+                    <button class="delete-btn" onclick="return confirm('¿Eliminar este reporte?')">
+                        ✖
+                    </button>
+                </form>
             </li>
             {% endfor %}
         </ul>
@@ -68,7 +85,6 @@
 
     <a href="/" class="back">← Volver</a>
 </div>
-
 
 </body>
 </html>

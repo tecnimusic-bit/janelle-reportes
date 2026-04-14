@@ -192,6 +192,19 @@ def reporte_pasado(id):
 
 
 # -----------------------------------
+#   RUTA BORRAR REPORTE
+# -----------------------------------
+@app.route('/borrar/<int:id>', methods=['POST'])
+def borrar(id):
+    conn = sqlite3.connect("historial.db")
+    c = conn.cursor()
+    c.execute("DELETE FROM reportes WHERE id=?", (id,))
+    conn.commit()
+    conn.close()
+    return redirect('/historial')
+
+
+# -----------------------------------
 #   PDF DEL DÍA ACTUAL
 # -----------------------------------
 @app.route('/pdf', methods=['POST'])
@@ -215,7 +228,6 @@ def pdf():
         ventas=[]
     )
 
-    # Selección automática según sistema operativo
     if PDF_MODE == "pdfkit":
         config = pdfkit.configuration(
             wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
