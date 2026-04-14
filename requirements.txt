@@ -1,5 +1,5 @@
 Flask==3.0.0
-pdfkit==1.0.0
+WeasyPrint==60.2
 Jinja2==3.1.2
 Werkzeug==3.0.1
 itsdangerous==2.1.2

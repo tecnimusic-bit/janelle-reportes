@@ -2,7 +2,17 @@ from flask import Flask, render_template, request, make_response, redirect
 from datetime import datetime
 import sqlite3
 import json
-import pdfkit
+import platform
+
+# -----------------------------------
+#   DETECTAR SISTEMA OPERATIVO
+# -----------------------------------
+if platform.system() == "Windows":
+    import pdfkit
+    PDF_MODE = "pdfkit"
+else:
+    from weasyprint import HTML
+    PDF_MODE = "weasyprint"
 
 app = Flask(__name__)
 
@@ -47,7 +57,6 @@ def settings():
     if request.method == 'POST':
         precio_hora = float(request.form.get('precio_hora'))
         comision = float(request.form.get('comision')) / 100
-
 
         data = {
             "precio_hora": precio_hora,
@@ -183,14 +192,6 @@ def reporte_pasado(id):
 
 
 # -----------------------------------
-#   CONFIG PDFKIT
-# -----------------------------------
-config = pdfkit.configuration(
-    wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
-)
-
-
-# -----------------------------------
 #   PDF DEL DÍA ACTUAL
 # -----------------------------------
 @app.route('/pdf', methods=['POST'])
@@ -214,7 +215,14 @@ def pdf():
         ventas=[]
     )
 
-    pdf = pdfkit.from_string(html, False, configuration=config)
+    # Selección automática según sistema operativo
+    if PDF_MODE == "pdfkit":
+        config = pdfkit.configuration(
+            wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+        )
+        pdf = pdfkit.from_string(html, False, configuration=config)
+    else:
+        pdf = HTML(string=html).write_pdf()
 
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
@@ -247,7 +255,13 @@ def pdf_reporte(id):
         ventas=ventas
     )
 
-    pdf = pdfkit.from_string(html, False, configuration=config)
+    if PDF_MODE == "pdfkit":
+        config = pdfkit.configuration(
+            wkhtmltopdf=r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+        )
+        pdf = pdfkit.from_string(html, False, configuration=config)
+    else:
+        pdf = HTML(string=html).write_pdf()
 
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
