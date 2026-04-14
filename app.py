@@ -205,7 +205,7 @@ def borrar(id):
 
 
 # -----------------------------------
-#   PDF DEL DÍA ACTUAL
+#   PDF DEL DÍA ACTUAL (PC)
 # -----------------------------------
 @app.route('/pdf', methods=['POST'])
 def pdf():
@@ -244,7 +244,7 @@ def pdf():
 
 
 # -----------------------------------
-#   PDF DE REPORTE GUARDADO
+#   PDF DE REPORTE GUARDADO (PC)
 # -----------------------------------
 @app.route('/pdf_reporte/<int:id>', methods=['POST'])
 def pdf_reporte(id):
@@ -280,6 +280,31 @@ def pdf_reporte(id):
     response.headers['Content-Disposition'] = f'attachment; filename=reporte_{id}.pdf'
 
     return response
+
+
+# -----------------------------------
+#   PDF WEB (Render)
+# -----------------------------------
+@app.route('/pdfweb/<int:id>')
+def pdfweb(id):
+    conn = sqlite3.connect("historial.db")
+    c = conn.cursor()
+    c.execute("SELECT fecha, horas, salario, total_ventas, total_comision, total_ganado, ventas_json FROM reportes WHERE id=?", (id,))
+    fila = c.fetchone()
+    conn.close()
+
+    ventas = json.loads(fila[6])
+
+    return render_template(
+        "reporte_pdf_web.html",
+        fecha=fila[0],
+        horas=fila[1],
+        salario=fila[2],
+        total_ventas=fila[3],
+        total_comision=fila[4],
+        total_ganado=fila[5],
+        ventas=ventas
+    )
 
 
 # -----------------------------------

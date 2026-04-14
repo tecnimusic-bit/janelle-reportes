@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+/* Marco tipo hoja */
+.pdf-page {
+    width: 90%;
+    max-width: 600px;
+    margin: 20px auto;
+    background: white;
+    padding: 30px;
+    border: 2px solid #000;
+    border-radius: 6px;
+    position: relative;
+}
+
+/* Encabezado */
+.pdf-header {
+    text-align: center;
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Tabla */
+.pdf-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.pdf-table th, .pdf-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+
+/* Pie de página automático */
+.pdf-footer {
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: #555;
+}
+
+/* Botón imprimir */
+.print-btn {
+    width: 100%;
+    padding: 14px;
+    background: #2196F3;
+    color: white;
+    border: none;
+    font-size: 18px;
+    margin-top: 20px;
+    border-radius: 6px;
+}
+
+/* Ocultar botón al imprimir */
+@media print {
+    .print-btn {
+        display: none;
+    }
+}
+</style>
+
+<!-- ABRIR AUTOMÁTICAMENTE EL DIÁLOGO DE IMPRESIÓN -->
+<script>
+window.onload = function() {
+    setTimeout(() => {
+        window.print();
+    }, 500);
+};
+
+// Cambiar nombre automático del PDF
+document.title = "Reporte_{{ fecha }}";
+</script>
+
+<div class="pdf-page">
+
+    <div class="pdf-header">Janelle Abreu</div>
+
+    <h3>Reporte del {{ fecha }}</h3>
+
+    <p><strong>Horas trabajadas:</strong> {{ "%.2f"|format(horas) }}</p>
+    <p><strong>Salario:</strong> ${{ "%.2f"|format(salario) }}</p>
+
+    <h3>Totales</h3>
+    <p><strong>Total ventas:</strong> ${{ "%.2f"|format(total_ventas) }}</p>
+    <p><strong>Total comisión:</strong> ${{ "%.2f"|format(total_comision) }}</p>
+    <p><strong>Total ganado:</strong> ${{ "%.2f"|format(total_ganado) }}</p>
+
+    {% if ventas %}
+    <h3>Detalle de ventas</h3>
+    <table class="pdf-table">
+        <tr>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Comisión</th>
+        </tr>
+        {% for v in ventas %}
+        <tr>
+            <td>{{ v.descripcion }}</td>
+            <td>${{ "%.2f"|format(v.precio) }}</td>
+            <td>${{ "%.2f"|format(v.comision) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    <button onclick="window.print()" class="print-btn">
+        🌐 Descargar PDF (Web)
+    </button>
+
+</div>
+
+<div class="pdf-footer">
+    Generado automáticamente — {{ fecha }}
+</div>
+
+{% endblock %}
