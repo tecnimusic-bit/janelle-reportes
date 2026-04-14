@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Janelle Abreu</h1>
+
+<!-- BOTÓN SETTINGS -->
+<a href="/settings">
+    <button style="background:#4CAF50; color:white; padding:10px 15px; border:none; font-size:16px; margin-bottom:10px;">
+        ⚙️ Settings
+    </button>
+</a>
+
+<!-- BOTÓN HISTORIAL -->
+<a href="/historial">
+    <button style="background:#4CAF50; color:white; padding:10px 15px; border:none; font-size:16px; margin-bottom:20px;">
+        📅 Historial
+    </button>
+</a>
+
+<form method="post" class="form-card">
+  <label>Fecha</label>
+  <input type="date" name="fecha" required>
+
+  <label>Hora de entrada</label>
+  <input type="time" name="entrada" required>
+
+  <label>Hora de salida</label>
+  <input type="time" name="salida" required>
+
+  <label>Ventas (una por línea: descripción,precio)</label>
+  <textarea name="ventas" rows="6" placeholder="Producto A, 120.50&#10;Producto B, 80.00"></textarea>
+
+  <button type="submit">Generar reporte</button>
+</form>
+
+{% if reporte %}
+<div class="reporte-card">
+  <h2>Reporte del día</h2>
+  <p><strong>Fecha:</strong> {{ reporte.fecha }}</p>
+  <p><strong>Horas trabajadas:</strong> {{ "%.2f"|format(reporte.horas) }}</p>
+  <p><strong>Salario:</strong> ${{ "%.2f"|format(reporte.salario) }}</p>
+
+  <h3>Totales</h3>
+  <p><strong>Total de ventas:</strong> ${{ "%.2f"|format(reporte.total_ventas) }}</p>
+  <p><strong>Total comisión:</strong> ${{ "%.2f"|format(reporte.total_comision) }}</p>
+  <p><strong>Total ganado en el día:</strong> ${{ "%.2f"|format(reporte.total_ganado) }}</p>
+
+  {% if reporte.ventas %}
+    <h3>Detalle de ventas</h3>
+    <table>
+      <tr>
+        <th>Descripción</th>
+        <th>Precio</th>
+        <th>Comisión</th>
+      </tr>
+      {% for v in reporte.ventas %}
+      <tr>
+        <td>{{ v.descripcion }}</td>
+        <td>${{ "%.2f"|format(v.precio) }}</td>
+        <td>${{ "%.2f"|format(v.comision) }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+
+  <form action="/pdf" method="post" target="_blank">
+    <input type="hidden" name="fecha" value="{{ reporte.fecha }}">
+    <input type="hidden" name="horas" value="{{ reporte.horas }}">
+    <input type="hidden" name="salario" value="{{ reporte.salario }}">
+    <input type="hidden" name="total_ventas" value="{{ reporte.total_ventas }}">
+    <input type="hidden" name="total_comision" value="{{ reporte.total_comision }}">
+
+    {% for v in reporte.ventas %}
+      <input type="hidden" name="venta_descripcion" value="{{ v.descripcion }}">
+      <input type="hidden" name="venta_precio" value="{{ v.precio }}">
+      <input type="hidden" name="venta_comision" value="{{ v.comision }}">
+    {% endfor %}
+
+    <button type="submit">Descargar PDF</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

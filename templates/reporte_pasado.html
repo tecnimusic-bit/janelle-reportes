@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Reporte Guardado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            max-width: 420px;
+            margin: 30px auto;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 22px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .back {
+            margin-top: 20px;
+            display: block;
+            text-align: center;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Reporte del {{ reporte.fecha }}</h2>
+
+    <p><strong>Horas trabajadas:</strong> {{ "%.2f"|format(reporte.horas) }}</p>
+    <p><strong>Salario:</strong> ${{ "%.2f"|format(reporte.salario) }}</p>
+
+    <h3>Totales</h3>
+    <p><strong>Total ventas:</strong> ${{ "%.2f"|format(reporte.total_ventas) }}</p>
+    <p><strong>Total comisión:</strong> ${{ "%.2f"|format(reporte.total_comision) }}</p>
+    <p><strong>Total ganado:</strong> ${{ "%.2f"|format(reporte.total_ganado) }}</p>
+
+    {% if reporte.ventas %}
+    <h3>Detalle de ventas</h3>
+    <table>
+        <tr>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Comisión</th>
+        </tr>
+        {% for v in reporte.ventas %}
+        <tr>
+            <td>{{ v.descripcion }}</td>
+            <td>${{ "%.2f"|format(v.precio) }}</td>
+            <td>${{ "%.2f"|format(v.comision) }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+
+    <form action="/pdf_reporte/{{ reporte.id }}" method="post" target="_blank">
+    <button style="background:#4CAF50; color:white; padding:10px 15px; border:none; font-size:16px; margin-top:20px;">
+        🖨️ Descargar PDF
+    </button>
+</form>
+
+
+    <a href="/historial" class="back">← Volver al historial</a>
+</div>
+
+</body>
+</html>
