@@ -87,7 +87,6 @@ def index():
         salida = request.form.get('salida')
         ventas_texto = request.form.get('ventas')
 
-        # Calcular horas trabajadas
         formato = "%H:%M"
         h_entrada = datetime.strptime(entrada, formato)
         h_salida = datetime.strptime(salida, formato)
@@ -95,7 +94,6 @@ def index():
 
         salario = horas * precio_hora
 
-        # Procesar ventas
         ventas = []
         total_ventas = 0
         total_comision = 0
@@ -127,7 +125,6 @@ def index():
             "ventas": ventas
         }
 
-        # Guardar en historial
         conn = sqlite3.connect("historial.db")
         c = conn.cursor()
         c.execute("""
@@ -165,7 +162,7 @@ def historial():
 
 
 # -----------------------------------
-#   RUTA REPORTE PASADO
+#   RUTA REPORTE PASADO (CORREGIDA)
 # -----------------------------------
 @app.route('/reporte/<int:id>')
 def reporte_pasado(id):
@@ -174,6 +171,9 @@ def reporte_pasado(id):
     c.execute("SELECT fecha, horas, salario, total_ventas, total_comision, total_ganado, ventas_json FROM reportes WHERE id=?", (id,))
     fila = c.fetchone()
     conn.close()
+
+    if not fila:
+        return "Reporte no encontrado", 404
 
     ventas = json.loads(fila[6])
 
@@ -192,6 +192,81 @@ def reporte_pasado(id):
 
 
 # -----------------------------------
+#   RUTA EDITAR REPORTE
+# -----------------------------------
+@app.route('/editar/<int:id>', methods=['GET'])
+def editar(id):
+    conn = sqlite3.connect("historial.db")
+    c = conn.cursor()
+    c.execute("SELECT fecha, horas, salario, ventas_json FROM reportes WHERE id=?", (id,))
+    fila = c.fetchone()
+    conn.close()
+
+    if not fila:
+        return "Reporte no encontrado", 404
+
+    ventas = json.loads(fila[3])
+
+    return render_template(
+        "editar_reporte.html",
+        id=id,
+        fecha=fila[0],
+        horas=fila[1],
+        salario=fila[2],
+        ventas=ventas
+    )
+
+
+# -----------------------------------
+#   RUTA ACTUALIZAR REPORTE
+# -----------------------------------
+@app.route('/actualizar/<int:id>', methods=['POST'])
+def actualizar(id):
+    fecha = request.form.get('fecha')
+    horas = float(request.form.get('horas'))
+    salario = float(request.form.get('salario'))
+
+    descripciones = request.form.getlist('descripcion[]')
+    precios = request.form.getlist('precio[]')
+
+    ventas = []
+    total_ventas = 0
+    total_comision = 0
+
+    settings = cargar_settings()
+    comision_porcentaje = settings["comision"]
+
+    for d, p in zip(descripciones, precios):
+        if d.strip() and p.strip():
+            precio = float(p)
+            comision = precio * comision_porcentaje
+            ventas.append({
+                "descripcion": d.strip(),
+                "precio": precio,
+                "comision": comision
+            })
+            total_ventas += precio
+            total_comision += comision
+
+    total_ganado = salario + total_comision
+
+    conn = sqlite3.connect("historial.db")
+    c = conn.cursor()
+    c.execute("""
+        UPDATE reportes
+        SET fecha=?, horas=?, salario=?, total_ventas=?, total_comision=?, total_ganado=?, ventas_json=?
+        WHERE id=?
+    """, (
+        fecha, horas, salario, total_ventas, total_comision, total_ganado,
+        json.dumps(ventas), id
+    ))
+    conn.commit()
+    conn.close()
+
+    return redirect(f"/reporte/{id}")
+
+
+# -----------------------------------
 #   RUTA BORRAR REPORTE
 # -----------------------------------
 @app.route('/borrar/<int:id>', methods=['POST'])
@@ -205,7 +280,7 @@ def borrar(id):
 
 
 # -----------------------------------
-#   PDF DEL DÍA ACTUAL (PC)
+#   PDF DEL DÍA ACTUAL
 # -----------------------------------
 @app.route('/pdf', methods=['POST'])
 def pdf():
@@ -244,7 +319,7 @@ def pdf():
 
 
 # -----------------------------------
-#   PDF DE REPORTE GUARDADO (PC)
+#   PDF DE REPORTE GUARDADO
 # -----------------------------------
 @app.route('/pdf_reporte/<int:id>', methods=['POST'])
 def pdf_reporte(id):
@@ -253,6 +328,9 @@ def pdf_reporte(id):
     c.execute("SELECT fecha, horas, salario, total_ventas, total_comision, total_ganado, ventas_json FROM reportes WHERE id=?", (id,))
     fila = c.fetchone()
     conn.close()
+
+    if not fila:
+        return "Reporte no encontrado", 404
 
     ventas = json.loads(fila[6])
 
@@ -283,7 +361,7 @@ def pdf_reporte(id):
 
 
 # -----------------------------------
-#   PDF WEB (Render)
+#   PDF WEB
 # -----------------------------------
 @app.route('/pdfweb/<int:id>')
 def pdfweb(id):
@@ -292,6 +370,9 @@ def pdfweb(id):
     c.execute("SELECT fecha, horas, salario, total_ventas, total_comision, total_ganado, ventas_json FROM reportes WHERE id=?", (id,))
     fila = c.fetchone()
     conn.close()
+
+    if not fila:
+        return "Reporte no encontrado", 404
 
     ventas = json.loads(fila[6])
 

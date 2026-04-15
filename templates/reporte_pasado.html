@@ -30,21 +30,37 @@
     </table>
     {% endif %}
 
-    <!-- BOTÓN PDF LOCAL (PC) -->
+    <!-- PDF PC -->
     <form action="/pdf_reporte/{{ reporte.id }}" method="post" target="_blank">
         <button style="background:#4CAF50; color:white; padding:10px 15px; border:none; font-size:16px; margin-top:20px;">
             🖨️ Descargar PDF (PC)
         </button>
     </form>
 
-    <!-- BOTÓN PDF WEB (RENDER) -->
+    <!-- PDF Web -->
     <a href="/pdfweb/{{ reporte.id }}"
        style="display:block; margin-top:15px; padding:12px; background:#2196F3; 
               color:white; text-align:center; border-radius:6px; font-size:16px;">
         🌐 Descargar PDF (Web)
     </a>
 
-    <a href="/historial" class="back">← Volver al historial</a>
+    <!-- EDITAR REPORTE (CORREGIDO) -->
+    <a href="{{ url_for('editar', id=reporte.id) }}"
+       style="display:block; margin-top:15px; padding:12px; background:#FF9800; 
+              color:white; text-align:center; border-radius:6px; font-size:16px;">
+        ✏️ Editar reporte
+    </a>
+
+    <!-- BORRAR -->
+    <form action="/borrar/{{ reporte.id }}" method="post" onsubmit="return confirm('¿Seguro que querés borrar este reporte?');">
+        <button style="background:#f44336; color:white; padding:10px 15px; border:none; font-size:16px; margin-top:15px;">
+            🗑️ Borrar reporte
+        </button>
+    </form>
+
+    <a href="/historial" class="back" style="display:block; margin-top:20px; text-align:center;">
+        ← Volver al historial
+    </a>
 </div>
 
 {% endblock %}

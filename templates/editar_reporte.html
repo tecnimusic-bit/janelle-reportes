@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+    <h2>Editar reporte</h2>
+
+    <form action="/actualizar/{{ id }}" method="post">
+
+        <label>Fecha:</label>
+        <input type="date" name="fecha" value="{{ fecha }}" required>
+
+        <label>Horas trabajadas:</label>
+        <input type="number" step="0.01" name="horas" value="{{ horas }}" required>
+
+        <label>Salario:</label>
+        <input type="number" step="0.01" name="salario" value="{{ salario }}" required>
+
+        <h3>Ventas</h3>
+
+        <div id="ventas-container">
+            {% for v in ventas %}
+            <div class="venta-item" style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+                <label>Descripción:</label>
+                <input type="text" name="descripcion[]" value="{{ v.descripcion }}" required>
+
+                <label>Precio:</label>
+                <input type="number" step="0.01" name="precio[]" value="{{ v.precio }}" required>
+
+                <button type="button" onclick="this.parentNode.remove()" 
+                        style="background:#f44336; color:white; border:none; padding:6px; margin-top:10px;">
+                    🗑️ Eliminar
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button type="button" onclick="agregarVenta()" 
+                style="background:#2196F3; color:white; border:none; padding:10px; width:100%; margin-top:10px;">
+            ➕ Agregar venta
+        </button>
+
+        <button type="submit" 
+                style="background:#4CAF50; color:white; border:none; padding:12px; width:100%; margin-top:20px; font-size:18px;">
+            💾 Guardar cambios
+        </button>
+
+    </form>
+
+    <a href="/reporte/{{ id }}" class="back" style="display:block; margin-top:20px; text-align:center;">
+        ← Cancelar
+    </a>
+</div>
+
+<script>
+function agregarVenta() {
+    const cont = document.getElementById("ventas-container");
+    const div = document.createElement("div");
+    div.className = "venta-item";
+    div.style = "border:1px solid #ccc; padding:10px; margin-bottom:10px;";
+
+    div.innerHTML = `
+        <label>Descripción:</label>
+        <input type="text" name="descripcion[]" required>
+
+        <label>Precio:</label>
+        <input type="number" step="0.01" name="precio[]" required>
+
+        <button type="button" onclick="this.parentNode.remove()" 
+                style="background:#f44336; color:white; border:none; padding:6px; margin-top:10px;">
+            🗑️ Eliminar
+        </button>
+    `;
+
+    cont.appendChild(div);
+}
+</script>
+
+{% endblock %}
