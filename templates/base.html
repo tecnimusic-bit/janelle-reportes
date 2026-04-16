@@ -1,16 +1,83 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Janelle - Reporte Diario</title>
-  <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon.png') }}">
-  <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Janelle App</title>
+
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f7f9fc;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(90deg, #8ec5fc, #e0c3fc);
+            padding: 15px 25px;
+            color: #fff;
+            font-size: 22px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            background: #ffffff;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        nav a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #444;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            color: #000;
+        }
+
+        .container {
+            padding: 25px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 18px;
+            background: #8ec5fc;
+            color: #fff;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #6aaefc;
+        }
+    </style>
 </head>
+
 <body>
-  <div class="container">
-    {% block content %}{% endblock %}
-  </div>
+
+<header>
+    Janelle App
+</header>
+
+<nav>
+    <a href="/">Home</a>
+    <a href="/historial">Historial</a>
+    <a href="/settings">Settings</a>
+    <a href="/timesheet">Time Sheet</a>
+</nav>
+
+<div class="container">
+    {% block content %}
+    {% endblock %}
+</div>
+
 </body>
 </html>

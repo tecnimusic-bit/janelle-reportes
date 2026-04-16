@@ -1,54 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta charset="utf-8">
-<style>
-body {
-  font-family: Arial, sans-serif;
-  padding: 20px;
-}
-h1 {
-  text-align: center;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-th, td {
-  border: 1px solid #ccc;
-  padding: 8px;
-}
-</style>
+    <meta charset="UTF-8">
+    <title>Reporte {{ fecha }}</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            font-size: 14px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            font-weight: normal;
+            color: #555;
+        }
+
+        .section {
+            margin-top: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        table, th, td {
+            border: 1px solid #444;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        .totales {
+            margin-top: 25px;
+            font-size: 16px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+        }
+    </style>
 </head>
+
 <body>
 
-<h1>Reporte Diario - Janelle Abreu</h1>
+    <h1>Janelle Abreu</h1>
+    <h2>Reporte del {{ fecha }}</h2>
 
-<p><strong>Fecha:</strong> {{ fecha }}</p>
-<p><strong>Horas trabajadas:</strong> {{ horas }}</p>
-<p><strong>Salario:</strong> ${{ salario }}</p>
-<p><strong>Total ventas:</strong> ${{ total_ventas }}</p>
-<p><strong>Total comisión:</strong> ${{ total_comision }}</p>
-<p><strong>Total ganado:</strong> ${{ total_ganado }}</p>
+    <div class="section">
+        <p><strong>Horas trabajadas:</strong> {{ horas }}</p>
+        <p><strong>Salario:</strong> ${{ salario }}</p>
 
-{% if ventas %}
-<h2>Detalle de ventas</h2>
-<table>
-  <tr>
-    <th>Descripción</th>
-    <th>Precio</th>
-    <th>Comisión</th>
-  </tr>
-  {% for v in ventas %}
-  <tr>
-    <td>{{ v.descripcion }}</td>
-    <td>${{ v.precio }}</td>
-    <td>${{ v.comision }}</td>
-  </tr>
-  {% endfor %}
-</table>
-{% endif %}
+        <p><strong>Personas en el live:</strong> {{ personas }}</p>
+
+        {% if personas|int == 2 %}
+        <p><strong>Trabajó con:</strong> {{ companero }}</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h3>Detalle de ventas</h3>
+
+        <table>
+            <tr>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Comisión</th>
+            </tr>
+
+            {% for v in ventas %}
+            <tr>
+                <td>{{ v.descripcion }}</td>
+                <td>${{ v.precio }}</td>
+                <td>${{ v.comision }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="totales">
+        <p><strong>Total ventas:</strong> ${{ total_ventas }}</p>
+        <p><strong>Total comisión:</strong> ${{ total_comision }}</p>
+        <p><strong>Total ganado:</strong> <strong>${{ total_ganado }}</strong></p>
+    </div>
+
+    <div class="footer">
+        Generado automáticamente — {{ fecha }}
+    </div>
 
 </body>
 </html>

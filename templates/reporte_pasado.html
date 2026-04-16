@@ -1,66 +1,70 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="container">
-    <h2>Reporte del {{ reporte.fecha }}</h2>
+<h2 style="text-align:center; margin-bottom:20px;">📄 Reporte del {{ reporte.fecha }}</h2>
 
-    <p><strong>Horas trabajadas:</strong> {{ "%.2f"|format(reporte.horas) }}</p>
-    <p><strong>Salario:</strong> ${{ "%.2f"|format(reporte.salario) }}</p>
+<div style="max-width:600px; margin:auto;">
 
-    <h3>Totales</h3>
-    <p><strong>Total ventas:</strong> ${{ "%.2f"|format(reporte.total_ventas) }}</p>
-    <p><strong>Total comisión:</strong> ${{ "%.2f"|format(reporte.total_comision) }}</p>
-    <p><strong>Total ganado:</strong> ${{ "%.2f"|format(reporte.total_ganado) }}</p>
+    <p><strong>Fecha:</strong> {{ reporte.fecha }}</p>
+    <p><strong>Horas trabajadas:</strong> {{ reporte.horas }}</p>
+    <p><strong>Salario base:</strong> ${{ reporte.salario|round|int }}</p>
 
-    {% if reporte.ventas %}
-    <h3>Detalle de ventas</h3>
-    <table>
-        <tr>
-            <th>Descripción</th>
-            <th>Precio</th>
-            <th>Comisión</th>
-        </tr>
-        {% for v in reporte.ventas %}
-        <tr>
-            <td>{{ v.descripcion }}</td>
-            <td>${{ "%.2f"|format(v.precio) }}</td>
-            <td>${{ "%.2f"|format(v.comision) }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <p><strong>Personas en el live:</strong> {{ reporte.personas }}</p>
+
+    {% if reporte.personas == 2 %}
+    <p><strong>Trabajó con:</strong> {{ reporte.companero }}</p>
     {% endif %}
 
-    <!-- PDF PC -->
-    <form action="/pdf_reporte/{{ reporte.id }}" method="post" target="_blank">
-        <button style="background:#4CAF50; color:white; padding:10px 15px; border:none; font-size:16px; margin-top:20px;">
-            🖨️ Descargar PDF (PC)
-        </button>
-    </form>
+    <p><strong>Total ventas:</strong> ${{ reporte.total_ventas|round|int }}</p>
+    <p><strong>Total comisión:</strong> ${{ reporte.total_comision|round|int }}</p>
 
-    <!-- PDF Web -->
-    <a href="/pdfweb/{{ reporte.id }}"
-       style="display:block; margin-top:15px; padding:12px; background:#2196F3; 
-              color:white; text-align:center; border-radius:6px; font-size:16px;">
-        🌐 Descargar PDF (Web)
-    </a>
+    <p style="font-size:18px; margin-top:10px;">
+        <strong>Total ganado:</strong> ${{ reporte.total_ganado|round|int }}
+    </p>
 
-    <!-- EDITAR REPORTE (CORREGIDO) -->
-    <a href="{{ url_for('editar', id=reporte.id) }}"
-       style="display:block; margin-top:15px; padding:12px; background:#FF9800; 
-              color:white; text-align:center; border-radius:6px; font-size:16px;">
+    <h3 style="margin-top:25px;">🛍️ Ventas</h3>
+    <ul>
+        {% for v in reporte.ventas %}
+        <li>
+            {{ v.descripcion }} — ${{ v.precio|round|int }}
+            (Comisión: ${{ v.comision|round|int }})
+        </li>
+        {% endfor %}
+    </ul>
+
+    <hr style="margin:25px 0;">
+
+    <!-- BOTÓN EDITAR -->
+    <a href="/editar/{{ reporte.id }}"
+        style="display:block; background:#FFC107; color:black; padding:12px; text-align:center; border-radius:6px; margin-bottom:10px;">
         ✏️ Editar reporte
     </a>
 
-    <!-- BORRAR -->
-    <form action="/borrar/{{ reporte.id }}" method="post" onsubmit="return confirm('¿Seguro que querés borrar este reporte?');">
-        <button style="background:#f44336; color:white; padding:10px 15px; border:none; font-size:16px; margin-top:15px;">
+    <!-- BOTÓN PDF WEB -->
+    <a href="/pdfweb/{{ reporte.id }}"
+        style="display:block; background:#2196F3; color:white; padding:12px; text-align:center; border-radius:6px; margin-bottom:10px;">
+        🌐 Ver PDF (Web)
+    </a>
+
+    <!-- BOTÓN PDF PC -->
+    <a href="/pdf_reporte/{{ reporte.id }}"
+        style="display:block; background:#6a9df8; color:white; padding:12px; text-align:center; border-radius:6px; margin-bottom:10px;">
+        🖨️ Ver PDF (PC)
+    </a>
+
+    <!-- BOTÓN BORRAR -->
+    <form action="/borrar/{{ reporte.id }}" method="POST"
+        onsubmit="return confirm('¿Seguro que deseas borrar este reporte?');">
+        <button type="submit"
+            style="background:#E53935; color:white; padding:12px; border:none; border-radius:6px; width:100%;">
             🗑️ Borrar reporte
         </button>
     </form>
 
-    <a href="/historial" class="back" style="display:block; margin-top:20px; text-align:center;">
+    <a href="/historial" style="display:block; text-align:center; margin-top:20px; color:#555;">
         ← Volver al historial
     </a>
+
 </div>
 
 {% endblock %}

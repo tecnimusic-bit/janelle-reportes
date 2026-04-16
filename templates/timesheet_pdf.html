@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Hours Time Sheet</title>
+
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            margin: 40px;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .range {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+
+        th, td {
+            border: 1px solid #999;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        th {
+            background: #e8f0ff;
+        }
+
+        .totals-title {
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</head>
+
+<body>
+
+<h2>Employee Hours Time Sheet</h2>
+
+<div class="range">
+    <strong>From:</strong> {{ start_date }} &nbsp;&nbsp;
+    <strong>To:</strong> {{ end_date }}
+</div>
+
+<table>
+    <tr>
+        <th>Date</th>
+        <th>Total Hours</th>
+        <th>Salary</th>
+        <th>Sales</th>
+        <th>Commission</th>
+        <th>Total</th>
+    </tr>
+
+    {% for row in datos %}
+    <tr>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[3] }}</td>
+        <td>${{ "%.2f"|format(row[4]) }}</td>
+        <td>${{ "%.2f"|format(row[5]) }}</td>
+        <td>${{ "%.2f"|format(row[6]) }}</td>
+        <td>${{ "%.2f"|format(row[7]) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3 class="totals-title">Totals</h3>
+
+<table>
+    <tr>
+        <th>Total Days</th>
+        <th>Total Hours</th>
+        <th>Total Salary</th>
+        <th>Total Sales</th>
+        <th>Total Commission</th>
+        <th>Total Earned</th>
+    </tr>
+    <tr>
+        <td>{{ total_days }}</td>
+        <td>{{ total_hours_hhmm }}</td>
+        <td>${{ "%.2f"|format(total_salary) }}</td>
+        <td>${{ "%.2f"|format(total_sales) }}</td>
+        <td>${{ "%.2f"|format(total_commission) }}</td>
+        <td>${{ "%.2f"|format(total_total) }}</td>
+    </tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,69 @@
+@app.route("/timesheet_result", methods=["POST"])
+def timesheet_result():
+    start_date = request.form["start_date"]
+    end_date = request.form["end_date"]
+
+    conn = sqlite3.connect("historial.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT fecha, horas, salario, total_ventas, total_comision, total_ganado
+        FROM reportes
+        WHERE fecha BETWEEN ? AND ?
+        ORDER BY fecha ASC
+    """, (start_date, end_date))
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    def decimal_to_hhmm(decimal_hours):
+        horas = int(decimal_hours)
+        minutos = int((decimal_hours - horas) * 60)
+        return f"{horas:02d}:{minutos:02d}"
+
+    processed = []
+    total_days = 0
+    total_hours_dec = 0.0
+    total_salary = 0.0
+    total_sales = 0.0
+    total_commission = 0.0
+    total_total = 0.0
+
+    for r in rows:
+        fecha, horas_dec, salario, ventas, comision, total = r
+        horas_hhmm = decimal_to_hhmm(horas_dec)
+
+        processed.append((
+            fecha,
+            "",
+            "",
+            horas_hhmm,
+            float(salario),
+            float(ventas),
+            float(comision),
+            float(total)
+        ))
+
+        total_days += 1
+        total_hours_dec += float(horas_dec)
+        total_salary += float(salario)
+        total_sales += float(ventas)
+        total_commission += float(comision)
+        total_total += float(total)
+
+    total_hours = int(total_hours_dec)
+    total_minutes = int(round((total_hours_dec - total_hours) * 60))
+    total_hours_hhmm = f"{total_hours:02d}:{total_minutes:02d}"
+
+    return render_template(
+        "timesheet.html",
+        datos=processed,
+        start_date=start_date,
+        end_date=end_date,
+        total_days=total_days,
+        total_hours_hhmm=total_hours_hhmm,
+        total_salary=total_salary,
+        total_sales=total_sales,
+        total_commission=total_commission,
+        total_total=total_total
+    )

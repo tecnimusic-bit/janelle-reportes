@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 style="text-align:center; margin-bottom:20px;">
+    Generate Time Sheet
+</h2>
+
+<form action="/timesheet_result" method="POST">
+
+    <label>Start Date:</label>
+    <input type="date" name="start_date" required>
+
+    <br><br>
+
+    <label>End Date:</label>
+    <input type="date" name="end_date" required>
+
+    <br><br>
+
+    <button type="submit" class="btn">Generate Report</button>
+
+</form>
+
+{% endblock %}

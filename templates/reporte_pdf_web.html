@@ -1,123 +1,134 @@
-{% extends "base.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte {{ fecha }}</title>
 
-<style>
-/* Marco tipo hoja */
-.pdf-page {
-    width: 90%;
-    max-width: 600px;
-    margin: 20px auto;
-    background: white;
-    padding: 30px;
-    border: 2px solid #000;
-    border-radius: 6px;
-    position: relative;
-}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 30px;
+            background: #f5f5f5;
+        }
 
-/* Encabezado */
-.pdf-header {
-    text-align: center;
-    font-size: 26px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #333;
-}
+        .page {
+            background: white;
+            padding: 40px;
+            margin: auto;
+            max-width: 800px;
+            border: 2px solid #000;
+        }
 
-/* Tabla */
-.pdf-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-}
+        h1 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
 
-.pdf-table th, .pdf-table td {
-    border: 1px solid #ccc;
-    padding: 8px;
-}
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            font-weight: normal;
+            color: #555;
+        }
 
-/* Pie de página automático */
-.pdf-footer {
-    position: fixed;
-    bottom: 10px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    font-size: 12px;
-    color: #555;
-}
+        .section {
+            margin-top: 25px;
+        }
 
-/* Botón imprimir */
-.print-btn {
-    width: 100%;
-    padding: 14px;
-    background: #2196F3;
-    color: white;
-    border: none;
-    font-size: 18px;
-    margin-top: 20px;
-    border-radius: 6px;
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
 
-/* Ocultar botón al imprimir */
-@media print {
-    .print-btn {
-        display: none;
-    }
-}
-</style>
+        table, th, td {
+            border: 1px solid #444;
+        }
 
-<!-- ABRIR AUTOMÁTICAMENTE EL DIÁLOGO DE IMPRESIÓN -->
-<script>
-window.onload = function() {
-    setTimeout(() => {
-        window.print();
-    }, 500);
-};
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
 
-// Cambiar nombre automático del PDF
-document.title = "Reporte_{{ fecha }}";
-</script>
+        .totales {
+            margin-top: 25px;
+            font-size: 16px;
+        }
 
-<div class="pdf-page">
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+        }
 
-    <div class="pdf-header">Janelle Abreu</div>
+        .btn {
+            display: block;
+            margin-top: 25px;
+            background: #2196F3;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+    </style>
+</head>
 
-    <h3>Reporte del {{ fecha }}</h3>
+<body>
 
-    <p><strong>Horas trabajadas:</strong> {{ "%.2f"|format(horas) }}</p>
-    <p><strong>Salario:</strong> ${{ "%.2f"|format(salario) }}</p>
+<div class="page">
 
-    <h3>Totales</h3>
-    <p><strong>Total ventas:</strong> ${{ "%.2f"|format(total_ventas) }}</p>
-    <p><strong>Total comisión:</strong> ${{ "%.2f"|format(total_comision) }}</p>
-    <p><strong>Total ganado:</strong> ${{ "%.2f"|format(total_ganado) }}</p>
+    <h1>Janelle Abreu</h1>
+    <h2>Reporte del {{ fecha }}</h2>
 
-    {% if ventas %}
-    <h3>Detalle de ventas</h3>
-    <table class="pdf-table">
-        <tr>
-            <th>Descripción</th>
-            <th>Precio</th>
-            <th>Comisión</th>
-        </tr>
-        {% for v in ventas %}
-        <tr>
-            <td>{{ v.descripcion }}</td>
-            <td>${{ "%.2f"|format(v.precio) }}</td>
-            <td>${{ "%.2f"|format(v.comision) }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    {% endif %}
+    <div class="section">
+        <p><strong>Horas trabajadas:</strong> {{ horas }}</p>
+        <p><strong>Salario:</strong> ${{ salario|round|int }}</p>
 
-    <button onclick="window.print()" class="print-btn">
-        🌐 Descargar PDF (Web)
-    </button>
+        <p><strong>Personas en el live:</strong> {{ personas }}</p>
+
+        {% if personas|int == 2 %}
+        <p><strong>Trabajó con:</strong> {{ companero }}</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h3>Detalle de ventas</h3>
+
+        <table>
+            <tr>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Comisión</th>
+            </tr>
+
+            {% for v in ventas %}
+            <tr>
+                <td>{{ v.descripcion }}</td>
+                <td>${{ v.precio|round|int }}</td>
+                <td>${{ v.comision|round|int }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="totales">
+        <p><strong>Total ventas:</strong> ${{ total_ventas|round|int }}</p>
+        <p><strong>Total comisión:</strong> ${{ total_comision|round|int }}</p>
+        <p><strong>Total ganado:</strong> <strong>${{ total_ganado|round|int }}</strong></p>
+    </div>
+
+    <!-- BOTÓN DESCARGAR PDF WEB (CORREGIDO) -->
+    <a class="btn" href="/pdfweb_download/{{ id }}">🌐 Descargar PDF (Web)</a>
+
+    <div class="footer">
+        Generado automáticamente — {{ fecha }}
+    </div>
 
 </div>
 
-<div class="pdf-footer">
-    Generado automáticamente — {{ fecha }}
-</div>
-
-{% endblock %}
+</body>
+</html>
